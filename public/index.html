@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smoking Cost Calculator: how much does smoking cost you? · Breathe</title>
+<meta name="description" content="Free smoking cost calculator. See what cigarettes cost you a day, month and year, how much you have spent so far, the life expectancy smoking takes, and what you save by quitting.">
+<link rel="canonical" href="{{PUBLIC_URL}}/smoking-calculator">
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Breathe">
+<meta property="og:title" content="Smoking Cost Calculator: how much does smoking cost you?">
+<meta property="og:description" content="What cigarettes cost you in money and time, and what you get back by quitting.">
+<meta property="og:url" content="{{PUBLIC_URL}}/smoking-calculator">
+<meta property="og:image" content="{{PUBLIC_URL}}/shell/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="bigthought.ai: app ideas and a blog by Adi">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="/smoking-calculator/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/smoking-calculator/assets/icon-180.png">
+<link rel="stylesheet" href="/smoking-calculator/assets/style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"WebApplication","name":"Smoking Cost Calculator","url":"{{PUBLIC_URL}}/smoking-calculator","applicationCategory":"HealthApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"},"publisher":{"@type":"Organization","name":"BigThought","url":"{{PUBLIC_URL}}/"}},
+ {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"How much does smoking 10 a day cost a year?","acceptedAnswer":{"@type":"Answer","text":"At £16 for a pack of 20, ten cigarettes a day costs about {{DEFAULT_PER_YEAR}} a year, or {{DEFAULT_PER_MONTH}} a month."}},
+  {"@type":"Question","name":"How much life does one cigarette take?","acceptedAnswer":{"@type":"Answer","text":"Research from University College London (2024) estimates each cigarette shortens life by about 20 minutes on average: around 17 minutes for men and 22 minutes for women."}},
+  {"@type":"Question","name":"What is a pack-year?","acceptedAnswer":{"@type":"Answer","text":"A pack-year is smoking 20 cigarettes a day for one year. Doctors use it to describe lifetime exposure: 10 a day for 10 years is 5 pack-years."}}
+ ]}
+]}
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/">BigThought</a>
+  <span class="crumb">/ <a href="/smoking-calculator">Breathe</a></span>
+</header>
+<main class="wrap">
+  <h1>Smoking cost calculator</h1>
+  <p class="lede">See what smoking costs you in money and in time, and what you get back from the day you stop. Everything is worked out in your browser; nothing you type is sent anywhere.</p>
+
+  <p class="card promo"><b>Cutting down?</b> The <a href="/smoking-calculator/tracker">Breathe tracker</a>: one tap each time you smoke, time since your last cigarette, your trend, and what studies find at your level. Save it to your home screen like an app.</p>
+
+  <form class="calc" id="calc" action="/smoking-calculator" method="get">
+    <label>Cigarettes a day <input name="perDay" type="number" inputmode="decimal" min="0" max="200" step="1" value="{{perDay}}"></label>
+    <label>Price of a pack (£) <input name="packPrice" type="number" inputmode="decimal" min="0" max="200" step="0.01" value="{{packPrice}}"></label>
+    <label>Cigarettes in a pack <input name="perPack" type="number" inputmode="decimal" min="1" max="200" step="1" value="{{perPack}}"></label>
+    <label>Years smoking <input name="years" type="number" inputmode="decimal" min="0" max="90" step="0.5" value="{{years}}"></label>
+    <noscript><button type="submit">Calculate</button></noscript>
+  </form>
+
+  <section class="results" aria-live="polite">
+    <div class="stat big"><span class="label">Smoking costs you</span><span class="value" data-out="perYear">{{perYear}}</span><span class="unit">a year</span></div>
+    <div class="stat"><span class="label">A day</span><span class="value" data-out="perDay">{{perDayCost}}</span></div>
+    <div class="stat"><span class="label">A week</span><span class="value" data-out="perWeek">{{perWeek}}</span></div>
+    <div class="stat"><span class="label">A month</span><span class="value" data-out="perMonth">{{perMonth}}</span></div>
+    <div class="stat"><span class="label">Spent so far</span><span class="value" data-out="spentSoFar">{{spentSoFar}}</span></div>
+    <div class="stat"><span class="label">Cigarettes so far</span><span class="value" data-out="cigarettesSoFar">{{cigarettesSoFar}}</span></div>
+    <div class="stat"><span class="label">Life expectancy lost (estimate)</span><span class="value" data-out="daysLost">{{daysLost}}</span></div>
+    <div class="stat"><span class="label">Pack-years</span><span class="value" data-out="packYears">{{packYears}}</span></div>
+  </section>
+
+  <p class="card promo"><b>Vape instead?</b> <a href="/smoking-calculator/vape-analyser">Add your bank statement</a> to see what you spend on vaping, how many puffs that is, and the cigarette equivalent. It never leaves your device.</p>
+
+  <h2>If you quit today</h2>
+  <p>Money you keep, and the same money put into savings at <label class="inline"><input form="calc" name="rate" type="number" min="0" max="20" step="0.1" value="{{rate}}">%</label> a year.</p>
+  <table class="quit">
+    <thead><tr><th>After</th><th>Kept</th><th>With interest</th></tr></thead>
+    <tbody id="quit-rows">{{quitRows}}</tbody>
+  </table>
+  <p class="hint">Every year without smoking also spares roughly <b data-out="daysRegainedPerYear">{{daysRegainedPerYear}}</b> of life expectancy at your current rate.</p>
+  <p><button class="btn" type="button" id="share" hidden>Copy a link to these numbers</button></p>
+
+  <h2>What happens to your body when you stop</h2>
+  <p>A general guide based on NHS information. Everyone is different, and this is not medical advice.</p>
+  <ol class="timeline">
+    <li><b>After 20 minutes</b> your pulse rate starts to return to normal.</li>
+    <li><b>After 8 hours</b> oxygen levels recover and the harmful carbon monoxide in your blood halves.</li>
+    <li><b>After 48 hours</b> carbon monoxide has left your body, your lungs start clearing mucus, and taste and smell improve.</li>
+    <li><b>After 72 hours</b> breathing feels easier and you may have more energy.</li>
+    <li><b>After 2 to 12 weeks</b> blood flows better around your body.</li>
+    <li><b>After 3 to 9 months</b> coughs, wheezing and breathing problems ease as your lung function improves.</li>
+    <li><b>After 1 year</b> your risk of a heart attack is about half that of a smoker.</li>
+    <li><b>After 10 years</b> your risk of dying from lung cancer is about half that of a smoker.</li>
+  </ol>
+  <p>Free help to stop: <a href="https://www.nhs.uk/better-health/quit-smoking/" rel="noopener">NHS Quit Smoking</a>. People who use stop-smoking support are much more likely to quit for good.</p>
+
+  <h2>How this is worked out</h2>
+  <ul>
+    <li><b>Cost</b> is the price of one cigarette (pack price ÷ cigarettes in a pack) × cigarettes a day × 365.25 days.</li>
+    <li><b>Life expectancy</b> uses about 20 minutes per cigarette, from University College London's 2024 analysis of long-running UK studies (17 minutes for men, 22 for women). It is an average across many people, not a prediction for you.</li>
+    <li><b>Interest</b> assumes you save the monthly cost each month, compounded monthly, at the rate you choose.</li>
+  </ul>
+
+  <h2>Questions</h2>
+  <h3>How much does smoking 10 a day cost a year?</h3>
+  <p>At £16 for a pack of 20, ten cigarettes a day costs about {{DEFAULT_PER_YEAR}} a year, or {{DEFAULT_PER_MONTH}} a month.</p>
+  <h3>How much life does one cigarette take?</h3>
+  <p>About 20 minutes on average, according to University College London research published in 2024: around 17 minutes for men and 22 minutes for women.</p>
+  <h3>What is a pack-year?</h3>
+  <p>Smoking 20 cigarettes a day for one year. Doctors use pack-years to describe lifetime exposure: 10 a day for 10 years is 5 pack-years.</p>
+</main>
+<footer class="foot">Breathe, a free app from <a href="/">BigThought</a>.</footer>
+<script src="/smoking-calculator/assets/calc.js"></script>
+<script src="/smoking-calculator/assets/app.js"></script>
+</body>
+</html>

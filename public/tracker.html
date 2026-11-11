@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cigarette Tracker: cut down with one tap · Breathe</title>
+<meta name="description" content="Tap a button each time you smoke. See time since your last cigarette, your daily trend, and what published studies say about the health risk at your level. Free, private, works offline.">
+<link rel="canonical" href="{{PUBLIC_URL}}/smoking-calculator/tracker">
+<link rel="manifest" href="/smoking-calculator/manifest.webmanifest">
+<link rel="icon" href="/smoking-calculator/assets/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="/smoking-calculator/assets/icon-180.png">
+<meta name="theme-color" content="#141414">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Breathe">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Breathe">
+<meta property="og:title" content="Cigarette Tracker: cut down with one tap">
+<meta property="og:description" content="One tap per cigarette. Your trend, time since your last one, and the real health figures. Private to your phone.">
+<meta property="og:image" content="{{PUBLIC_URL}}/shell/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="bigthought.ai: app ideas and a blog by Adi">
+<link rel="stylesheet" href="/smoking-calculator/assets/style.css">
+</head>
+<body class="tracker-page">
+<header class="top">
+  <a class="brand" href="/">BigThought</a>
+  <span class="crumb">/ <a href="/smoking-calculator">Breathe</a> / Tracker</span>
+  <button class="install" id="install" hidden>Install app</button>
+</header>
+<main class="wrap">
+  <noscript><p class="card">The tracker needs JavaScript: your taps are saved on this device, not on a server.</p></noscript>
+
+  <section class="hero" id="hero" hidden>
+    <div class="since" aria-live="polite"><span class="since-time" id="since"></span> <span class="since-label" id="sinceLabel"></span></div>
+    <button class="smoke-btn" id="smoke" type="button">
+      <span class="smoke-main">I smoked a cigarette</span>
+      <span class="smoke-sub" id="smokeSub"></span>
+    </button>
+    <div class="logged" id="logged" role="status" aria-live="polite"></div>
+    <p class="actions"><button class="btn" id="undo" type="button">Undo last</button> <a class="btn" href="https://www.nhs.uk/better-health/quit-smoking/" rel="noopener">Free help to quit</a></p>
+  </section>
+
+  <section id="trend" hidden>
+    <h2>Your last 14 days</h2>
+    <p class="week" id="week"></p>
+    <div class="viz-root">
+      <div class="chart" id="days"></div>
+      <div class="tip" id="daysTip" hidden></div>
+      <details class="more"><summary>Show as a table</summary><table class="tx" id="daysTable"></table></details>
+    </div>
+  </section>
+
+  <section id="risk" hidden>
+    <h2>What studies find at your level</h2>
+    <div class="viz-head">
+      <div class="segmented" role="radiogroup" aria-label="Figures for">
+        <label><input type="radio" name="sex" value="men"> Men</label>
+        <label><input type="radio" name="sex" value="women"> Women</label>
+      </div>
+      <ul class="legend" id="legend"></ul>
+    </div>
+    <p class="risk-text" id="riskText"></p>
+    <div class="viz-root">
+      <div class="chart" id="curve"></div>
+      <div class="tip" id="curveTip" hidden></div>
+      <details class="more"><summary>Show as a table</summary><table class="tx" id="curveTable"></table></details>
+    </div>
+    <p class="hint">Risk compared with people who have never smoked: 1.0 = the same, 1.5 = 50% higher. Shaded bands are the studies' 95% confidence ranges. Figures are from a meta-analysis of 141 studies; studies that also allowed for other risk factors found the risks to be higher.</p>
+  </section>
+
+  <section id="vaping" hidden>
+    <h2>And vaping?</h2>
+    <p id="vapeLine"></p>
+    <ul id="vapeFacts"></ul>
+    <form id="puffsForm" class="calc">
+      <label>Puffs a day (optional) <input id="puffs" type="number" min="0" max="20000" step="1" placeholder="e.g. 300"></label>
+    </form>
+    <p class="hint">Don't know? The <a href="/smoking-calculator/vape-analyser">vape analyser</a> works it out from a bank statement, on your device.</p>
+  </section>
+
+  <section class="help card">
+    <h2>Want to stop?</h2>
+    <p>Free, friendly support can make you up to three times as likely to quit for good: <a href="https://www.nhs.uk/better-health/quit-smoking/" rel="noopener">NHS Quit Smoking</a> (local stop-smoking services, free medication and the NHS Quit Smoking app).</p>
+  </section>
+
+  <h2>Sources</h2>
+  <ol class="sources" id="sources"></ol>
+  <p class="hint">Not medical advice. Saved only in this browser on this device. <button class="linkbtn" id="reset" type="button">Clear my data</button></p>
+</main>
+<script src="/smoking-calculator/assets/health.js"></script>
+<script src="/smoking-calculator/assets/tracker.js"></script>
+<script src="/smoking-calculator/assets/tracker-ui.js"></script>
+</body>
+</html>

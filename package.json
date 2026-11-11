@@ -1,0 +1,12 @@
+{
+  "name": "breathe",
+  "version": "1.0.0",
+  "description": "Cut down on smoking: a one-tap tracker, health figures, and smoking and vaping cost calculators. Runs at bigthought.ai/smoking-calculator.",
+  "license": "MIT",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js",
+    "train:vape": "node model/train.js"
+  }
+}

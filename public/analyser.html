@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vape Spending Analyser: puffs and cigarette equivalent from your bank statement · Breathe</title>
+<meta name="description" content="Add your bank statement (CSV or PDF) to see how much you spend on vaping, roughly how many puffs that is, and the cigarette equivalent. Read on your device; never uploaded.">
+<link rel="canonical" href="{{PUBLIC_URL}}/smoking-calculator/vape-analyser">
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Breathe">
+<meta property="og:title" content="Vape Spending Analyser: what your vaping adds up to">
+<meta property="og:description" content="Your bank statement in, vape spend, puffs and cigarette equivalent out. Private: it never leaves your device.">
+<meta property="og:url" content="{{PUBLIC_URL}}/smoking-calculator/vape-analyser">
+<meta property="og:image" content="{{PUBLIC_URL}}/shell/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="bigthought.ai: app ideas and a blog by Adi">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="/smoking-calculator/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/smoking-calculator/assets/icon-180.png">
+<link rel="stylesheet" href="/smoking-calculator/assets/style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"WebApplication","name":"Vape Spending Analyser","url":"{{PUBLIC_URL}}/smoking-calculator/vape-analyser","applicationCategory":"HealthApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"},"publisher":{"@type":"Organization","name":"BigThought","url":"{{PUBLIC_URL}}/"}},
+ {"@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"How many cigarettes is 6000 puffs?","acceptedAnswer":{"@type":"Answer","text":"Using the common UK rule of thumb that 600 puffs is about 20 cigarettes (based on nicotine), 6,000 puffs is about 200 cigarettes. That compares nicotine, not health risk: the long-term risk of vaping has not been measured yet."}},
+  {"@type":"Question","name":"Is my bank statement uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The statement is read and analysed by your own browser. It is never sent to BigThought or anyone else."}},
+  {"@type":"Question","name":"How does it find vape purchases?","acceptedAnswer":{"@type":"Answer","text":"A small machine-learning model, running in your browser, scores each transaction description for how likely it is to be a vape shop or vape brand. You can untick anything it got wrong and add purchases it missed."}}
+ ]}
+]}
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/">BigThought</a>
+  <span class="crumb">/ <a href="/smoking-calculator">Breathe</a> / Vape analyser</span>
+</header>
+<main class="wrap">
+  <h1>Vape spending analyser</h1>
+  <p class="lede">Add a bank statement to see how much you spend on vaping, roughly how many puffs that is, and what it compares to in cigarettes.</p>
+  <p class="private"><b>Private by design:</b> your statement is read by this page on your device. It is never uploaded, saved or sent anywhere.</p>
+
+  <noscript><p class="card">This analyser needs JavaScript, because it reads your statement on your own device instead of uploading it.</p></noscript>
+
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept=".csv,.pdf,text/csv,application/pdf" multiple>
+    <b>Choose your bank statement</b> or drop it here<br>
+    <span class="hint">CSV or PDF. Several files (months) at once is fine. Scanned paper statements can't be read.</span>
+  </label>
+  <div class="msg" id="status" role="status"></div>
+
+  <section id="review" hidden>
+    <h2>Vape purchases found</h2>
+    <p class="hint" id="reviewHint"></p>
+    <table class="tx">
+      <thead><tr><th></th><th>Date</th><th>Description</th><th class="num">Amount</th><th class="num">Match</th></tr></thead>
+      <tbody id="flagged"></tbody>
+    </table>
+    <details class="more">
+      <summary>Add a purchase it missed</summary>
+      <p class="hint">Vapes bought at a supermarket or newsagent look like any other shop on a statement. Search for them and tick them here.</p>
+      <input id="search" type="search" placeholder="Search your transactions, e.g. newsagent" autocomplete="off">
+      <table class="tx"><tbody id="results"></tbody></table>
+    </details>
+  </section>
+
+  <section id="product" hidden>
+    <h2>What do you usually buy?</h2>
+    <div class="calc">
+      <label class="wide">Product <select id="productSel"></select></label>
+      <label>Puffs per device <input id="puffs" type="number" min="1" max="100000" step="1"></label>
+      <label>Price per device (£) <input id="price" type="number" min="0.01" max="500" step="0.01"></label>
+      <label>Cigarette pack price, to compare (£) <input id="packPrice" type="number" min="0" max="200" step="0.01" value="16"></label>
+    </div>
+    <p class="hint">Prices are typical starting points: change them to what you pay. Refills and e-liquid: choose "Something else" and enter roughly how many puffs you get for what you pay.</p>
+  </section>
+
+  <section id="summary" hidden aria-live="polite">
+    <h2>Your vaping, <span id="period"></span></h2>
+    <div class="results">
+      <div class="stat big"><span class="label">Spent on vaping</span><span class="value" id="o-spend"></span><span class="unit" id="o-spendYear"></span></div>
+      <div class="stat"><span class="label">Devices (approx.)</span><span class="value" id="o-devices"></span></div>
+      <div class="stat"><span class="label">Puffs</span><span class="value" id="o-puffs"></span><span class="unit" id="o-puffsDay"></span></div>
+      <div class="stat"><span class="label">Cigarettes, by puffs</span><span class="value" id="o-cigs"></span><span class="unit" id="o-cigsDay"></span></div>
+            <div class="stat"><span class="label">Same cigarettes would have cost</span><span class="value" id="o-smokeCost"></span></div>
+    </div>
+    <p class="card promo"><b>Cutting down on cigarettes too?</b> The <a href="/smoking-calculator/tracker">cigarette tracker</a> is one tap per cigarette, shows your trend and what studies find at your level, and installs on your phone like an app.
+      <br><button class="btn btn-primary" id="track" type="button">Open the tracker with these puffs a day</button></p>
+    <p class="hint">Rough estimates, not medical advice. If you want to stop vaping or smoking, <a href="https://www.nhs.uk/better-health/quit-smoking/" rel="noopener">NHS Quit Smoking</a> has free support.</p>
+  </section>
+
+  <h2>How it works</h2>
+  <ol>
+    <li><b>Reading your statement.</b> CSV files are read column by column. PDFs are turned into text on your device (with Mozilla's pdf.js) and read line by line.</li>
+    <li><b>Finding vape purchases.</b> A small machine-learning model, running in your browser, scores each transaction description for how likely it is to be a vape shop or vape brand. Strong matches are ticked for you; possible ones are listed for you to check.</li>
+    <li><b>Spend to puffs.</b> Total vape spend ÷ price per device = devices; devices × puffs per device = puffs.</li>
+    <li><b>Puffs to cigarettes.</b> The common UK retailer rule of thumb, based on nicotine: a 600-puff device is about 20 cigarettes, so 30 puffs ≈ 1 cigarette.</li>
+  </ol>
+  <p class="hint"><b>What this doesn't tell you:</b> health risk. Cigarettes by puffs compares nicotine, not harm. The health risks of smoking even a few cigarettes a day are well measured; the long-term risk of vaping isn't known yet. The <a href="/smoking-calculator/tracker">Breathe tracker</a> shows what studies find, with sources.</p>
+
+  <h2>Questions</h2>
+  <h3>How many cigarettes is 6000 puffs?</h3>
+  <p>By the 600-puffs-is-20-cigarettes rule, 6,000 puffs is about 200 cigarettes. That rule compares nicotine, not health risk: the long-term risk of vaping hasn't been measured yet, so it can't honestly be turned into a number of cigarettes' worth of harm.</p>
+  <h3>Is my bank statement uploaded?</h3>
+  <p>No. Your browser reads and analyses it. Nothing about it is sent to BigThought or anyone else, and closing the page clears it.</p>
+  <h3>Why didn't it find all my vape purchases?</h3>
+  <p>Statements show the shop, not what you bought. A vape shop is easy to spot; vapes bought with your shopping at a supermarket or newsagent are not. Use "Add a purchase it missed" to tick those.</p>
+
+  <p><a href="/smoking-calculator">← Smoking cost calculator</a></p>
+</main>
+<footer class="foot">Breathe, a free app from <a href="/">BigThought</a>.</footer>
+<script src="/smoking-calculator/assets/statement.js"></script>
+<script src="/smoking-calculator/assets/vapemodel.js"></script>
+<script src="/smoking-calculator/assets/vape.js"></script>
+<script src="/smoking-calculator/assets/tracker.js"></script>
+<script src="/smoking-calculator/assets/analyser.js"></script>
+</body>
+</html>
